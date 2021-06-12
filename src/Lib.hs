@@ -1,6 +1,6 @@
 module Lib where
-import Data.List
-import Text.Show.Functions
+import Data.List ()
+import Text.Show.Functions ()
 
 data Ladron = UnLadron {
     profesion :: String,
@@ -42,27 +42,37 @@ esconderse ladron = cantidadDeArmasASacar ladron habilidadLadron 3 ladron
 cantidadDeArmasASacar ladron funcion cantidad persona= ladron {armas= drop (div (length (funcion persona)) cantidad ) (armas ladron)}
 
 {-1) Modelar a los siguientes personajes-}
+tokio :: Ladron
 tokio = UnLadron "" "Tokio" ["Trabajo psicologico","Entrar en moto","Bokita"] [UnArma "Pistola" 9 8 efectoPistola,UnArma "Pistola" 9 8 efectoPistola, UnArma "Ametralladora" 1 30 efectoAmetralladora]
+profesor :: Ladron
 profesor = UnLadron "" "Profesor" ["disfrazarse de linyera", "disfrazarse de payaso","estar siempre un paso adelante"] []
+pablo :: Rehen
 pablo = UnRehen "Pablo12312" 40 30 [esconderse]
+arturito :: Rehen
 arturito = UnRehen "Arturo" 70 50 [esconderse, atacarAlLadron pablo]
 
 {-2 Saber si un ladrón es inteligente. Ocurre cuando tiene más de dos habilidades, 
 además el Profesor es la mente maestra, por lo que indudablemente es inteligente. -}
 
+unLadronEsInteligente :: Ladron -> Bool
 unLadronEsInteligente ladron = nombreLadron ladron == "Profesor" || length (habilidadLadron ladron) > 2
 
 {-3) Que un ladrón consiga un arma nueva, y se la agregue a las que ya tiene.-}
+pistola :: Arma
 pistola = UnArma "Pistola" 9 8 efectoPistola
+consigueArmaNueva :: Arma -> Ladron -> Ladron
 consigueArmaNueva arma ladron  = ladron {armas = arma : armas ladron}
 
 {-4) Que un ladrón intimide a un rehén, usando alguno de los métodos planeados.-}
 
+hacerseElMalo :: Ladron -> Rehen -> Rehen
 hacerseElMalo ladron rehen = consecuenciaDeHacerseElMalo ladron rehen
 
+consecuenciaDeHacerseElMalo :: Ladron -> Rehen -> Rehen
 consecuenciaDeHacerseElMalo ladron rehen | nombreLadron ladron == "Berlin" = rehen {nivelMiedo = nivelMiedo rehen + sumarCantidadLetrasHabilidadLadron ladron}
                                          | nombreLadron ladron == "Rio" = rehen {nivelComplot = nivelComplot rehen + 20}
                                          | otherwise = rehen {nivelMiedo = nivelMiedo rehen +10}
+sumarCantidadLetrasHabilidadLadron :: Ladron -> Int
 sumarCantidadLetrasHabilidadLadron ladron = length.concat.habilidadLadron $ ladron
 
 --disparos ladron rehen =   (sort (map (length . nombreArma) (armas ladron)))
@@ -86,10 +96,14 @@ verificarHabilidad ladron habilidad = any ((==habilidad) . take (length habilida
 {-7) Saber si la cosa pinta mal, que es cuando dados unos ladrones y unos rehenes,
  el nivel de complot promedio de los rehenes es mayor al nivel de miedo promedio multiplicado por la cantidad de armas de los ladrones.-}
 
+laCosaPintaMal :: [Ladron] -> [Rehen] -> Bool
 laCosaPintaMal ladrones rehenes = (promedioNivelComplot rehenes) > ((promedioNivelMiedo rehenes) * (cantidadDeArmas ladrones))
 
+promedioNivelComplot :: [Rehen] -> Int
 promedioNivelComplot rehenes = promedio (map (nivelComplot) rehenes)
+promedioNivelMiedo :: [Rehen] -> Int
 promedioNivelMiedo rehenes = promedio (map (nivelMiedo) rehenes)
+cantidadDeArmas :: [Ladron] -> Int
 cantidadDeArmas ladrones =  sum (map (length.armas) ladrones)
 
 promedio xs = div (sum xs) (length xs)
